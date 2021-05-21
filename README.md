@@ -5,8 +5,7 @@ Costa AC, Ahamed T, Jordan D, Stephens GJ (2021) "Maximally predictive ensemble 
 
 The data for reproducing the figures can be found in
 
-https://zenodo.org/badge/DOI/10.5281/zenodo.4778712.svg
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4778712.svg)](https://doi.org/10.5281/zenodo.4778712)
 
 
 Any comments or questions, contact antoniocbscosta(at)gmail(dot)com. Also, suggestions to speed up the code are more than welcome!
