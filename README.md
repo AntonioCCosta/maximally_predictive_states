@@ -14,7 +14,7 @@ Any comments or questions, contact antoniocbscosta(at)gmail(dot)com. Also, sugge
 -------------------------------------------------------------------------------------------
 
 
-The code is fully written in python3, and we make use of the following packages:
+The code is fully written in python3, and we use of the following packages:
 
 - h5py '3.0.0'
 - sklearn '0.23.1'
