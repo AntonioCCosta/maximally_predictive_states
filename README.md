@@ -1,7 +1,7 @@
 # predictive_ensemble_dynamics
 This repository contains the main scripts for the maximally predictive state space reconstruction and ensemble dynamics modelling presented in
 
-Costa AC, Ahamed T, Jordan D, Stephens GJ (2021) "Maximally predictive ensemble dynamics from data" [arXiv](https://arxiv.org/abs/2105.12811)
+Costa AC, Ahamed T, Jordan D, Stephens GJ (2021) "Maximally predictive ensemble dynamics from data" ([arXiv link](https://arxiv.org/abs/2105.12811))
 
 The data for reproducing the figures can be found in [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4778712.svg)](https://doi.org/10.5281/zenodo.4778712)
 
