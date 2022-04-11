@@ -3,11 +3,12 @@ This repository contains the main scripts for the maximally predictive state spa
 
 Costa AC, Ahamed T, Jordan D, Stephens GJ (2021) "Maximally predictive ensemble dynamics from data" ([arXiv link](https://arxiv.org/abs/2105.12811))
 
+https://user-images.githubusercontent.com/10087987/162702025-caa687e1-687a-454a-aa70-a2f0c1462340.mp4
+
 The data for reproducing the figures can be found in [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4778712.svg)](https://doi.org/10.5281/zenodo.4778712)
 
 
 Any comments or questions, contact antoniocbscosta(at)gmail(dot)com. Also, suggestions to speed up the code are more than welcome!
-
 
 
 -------------------------------------------------------------------------------------------
