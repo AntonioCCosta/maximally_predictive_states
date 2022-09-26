@@ -3,10 +3,14 @@ import numpy.ma as ma
 from scipy.sparse import csc_matrix as sparse_matrix
 from scipy.sparse.linalg import eigs
 from scipy.linalg import eig
-from scipy.sparse import diags,identity,coo_matrix
+from scipy.sparse import diags,identity,coo_matrix,csr_matrix
 import msmtools.estimation as msm_estimation
 import msmtools.analysis as msm_analysis
 import stats
+from scipy.signal import find_peaks
+from scipy.signal import find_peaks
+
+
 import matplotlib.pyplot as plt
 
 
@@ -30,8 +34,9 @@ def get_count_matrix(labels,lag,nstates):
 
     data = np.ones(row.size)
     C = coo_matrix((data, (row, col)), shape=(nstates, nstates))
+    # export to output format
     count_matrix = C.tocsr()
-    
+
     return count_matrix
 
 
@@ -87,7 +92,7 @@ def get_connected_labels(labels,lcs):
     final_labels[final_labels==0] = ma.masked
     final_labels-=1
     return final_labels
-    
+
 def sorted_spectrum(R,k=5,which='LR'):
     eigvals,eigvecs = eigs(R,k=k,which=which)
     sorted_indices = np.argsort(eigvals.real)[::-1]
@@ -106,14 +111,14 @@ def compute_tscales(P,delay,dt=1,k=2):
         return -(delay*dt)/np.log(np.abs(eigvals))
     except:
         return np.array([np.nan]*(k-1))
-    
+
 
 def get_reversible_transition_matrix(P):
     probs = stationary_distribution(P)
     P_hat = diags(1/probs)*P.transpose()*diags(probs)
     R=(P+P_hat)/2
     return R
-    
+
 def get_split_trajs(labels,size = 0):
     if size == 0:
         size = len(labels)/20
@@ -138,7 +143,7 @@ def get_bootstrapped_Ps(labels,delay,n_samples,size = 0):
     #get dtrajs to deal with possible nans
     dtrajs = get_split_trajs(labels,size)
     nstates = np.unique(labels.compressed()).shape[0]
-    
+
     sample_Ps=[]
     for k in range(n_samples):
         sample_trajs = [dtrajs[k] for k in np.random.randint(0,len(dtrajs),len(dtrajs))]
@@ -147,8 +152,8 @@ def get_bootstrapped_Ps(labels,delay,n_samples,size = 0):
         P = msm_estimation.tmatrix(connected_count_matrix)
         sample_Ps.append(P)
     return sample_Ps
-        
-    
+
+
 def boostrap_tscales(labels,delay,dt,n_modes,n_samples = 1000,size=0,reversible=True):
     Ps = get_bootstrapped_Ps(labels,delay,n_samples,size)
     tscales=np.zeros((n_samples,n_modes))
@@ -160,12 +165,12 @@ def boostrap_tscales(labels,delay,dt,n_modes,n_samples = 1000,size=0,reversible=
             tscale = compute_tscales(P,delay,dt,k=n_modes+1)
         tscales[k,:]=tscale
     return tscales
-    
-    
+
+
 def bootstrap_tscale_sample(labels,delay,dt,n_modes,size=0,reversible=True):
     dtrajs = get_split_trajs(labels,size)
-    nstates = np.unique(labels.compressed()).shape[0] 
-    
+    nstates = np.unique(labels.compressed()).shape[0]
+
     sample_trajs = [dtrajs[k] for k in np.random.randint(0,len(dtrajs),len(dtrajs))]
     count_ms = get_count_ms(sample_trajs,delay,nstates)
     connected_count_matrix = msm_estimation.connected_cmatrix(count_ms)
@@ -180,7 +185,7 @@ def bootstrap_tscale_sample(labels,delay,dt,n_modes,size=0,reversible=True):
 
 def bootstrap_tscales_delays(range_delays,labels,n_modes,dt,n_samples=1000,size=0,reversible=True):
     dtrajs = get_split_trajs(labels,size)
-    nstates = np.unique(labels.compressed()).shape[0]    
+    nstates = np.unique(labels.compressed()).shape[0]
     sample_trajs = [dtrajs[k] for k in np.random.randint(0,len(dtrajs),len(dtrajs))]
     tscales=np.zeros((len(range_delays),n_modes))
     for kd,delay in enumerate(range_delays):
@@ -200,8 +205,8 @@ def bootstrap_tscales_delays(range_delays,labels,n_modes,dt,n_samples=1000,size=
 
 
 def compute_implied_tscales(labels,range_delays,dt=1,n_modes=5,n_samples=1000,size=0,reversible=False,confidence = 95):
-    if size==0:
-        size = np.max(range_delays)*2
+    if length==0:
+        length = np.max(range_delays)*2
     cil = (100-confidence)/2
     ciu = 100-cil
     cil_delay=np.zeros((len(range_delays),n_modes))
@@ -216,23 +221,6 @@ def compute_implied_tscales(labels,range_delays,dt=1,n_modes=5,n_samples=1000,si
         ciu_delay[kd,:] = np.nanpercentile(tscales_samples,ciu,axis=0)
     return cil_delay,ciu_delay,mean_delay
 
-
-def find_asymptote(ts,tol=1e-5):
-    es_0 = np.percentile(ts,80)
-    tau_0 = np.where(np.diff(np.sign(ts-es_0)))[0][0]
-    es_list=[es_0,]
-    tau_list=[tau_0,]
-    m,b=np.polyfit(np.arange(tau_0,len(ts)),np.cumsum(ts)[tau_list[-1]:],1)
-    es_list.append(m)
-    tau_list.append(np.where(np.diff(np.sign(ts-m)))[0][0])
-    while es_list[-1]-es_list[-2]>tol:
-        m,b=np.polyfit(np.arange(tau_list[-1],len(ts)),np.cumsum(ts)[tau_list[-1]:],1)
-        es_list.append(m)
-        try:
-            tau_list.append(np.where(np.diff(np.sign(ts-m)))[0][0])
-        except:
-            break
-    return tau_list[-1],es_list[-1]
 
 
 def stationary_distribution(P):
@@ -266,24 +254,9 @@ def simulate(P,state0,iters):
     return states
 
 
-def state_lifetime(states,tau):
-    '''
-    Get distribution of lifetimes of each state in states
-    tau is the sampling time of the states
-    '''
-    durations=[]
-    for state in np.sort(np.unique(states.compressed())):
-        gaps = states==state
-        gaps_boundaries = np.where(np.abs(np.diff(np.concatenate([[False], gaps, [False]]))))[0].reshape(-1, 2)
-        durations.append(np.hstack(np.diff(gaps_boundaries))*tau)
-    return durations
-
-
-from scipy.signal import find_peaks
-
 
 def optimal_partition(phi2,inv_measure,P,return_rho = True):
-    
+
     X = phi2
     c_range = np.sort(phi2)[1:-1]
     rho_c = np.zeros(len(c_range))
@@ -291,16 +264,16 @@ def optimal_partition(phi2,inv_measure,P,return_rho = True):
     for kc,c in enumerate(c_range):
         labels = np.zeros(len(X),dtype=int)
         labels[X<=c] = 1
-        rho_sets[kc] = [(inv_measure[labels==idx]*(P[labels==idx,:][:,labels==idx])).sum()/inv_measure[labels==idx].sum() 
+        rho_sets[kc] = [(inv_measure[labels==idx]*(P[labels==idx,:][:,labels==idx])).sum()/inv_measure[labels==idx].sum()
                       for idx in range(2)]
     rho_c = np.min(rho_sets,axis=1)
-    peaks, heights = find_peaks(rho_c, height=0.5) 
-    if len(peaks)==0: #lower height
+    peaks, heights = find_peaks(rho_c, height=0.5)
+    if len(peaks)==0:
         print('No prominent coherent set')
         return None
     else:
         idx = peaks[np.argmax(heights['peak_heights'])]
-        
+
         c_opt = c_range[idx]
         kmeans_labels = np.zeros(len(X),dtype=int)
         kmeans_labels[X<c_opt] = 1
@@ -309,98 +282,3 @@ def optimal_partition(phi2,inv_measure,P,return_rho = True):
             return c_range,rho_sets,idx,kmeans_labels
         else:
             return kmeans_labels
-
-
-def subdivide_state_optimal(phi2,kmeans_labels,inv_measure,P,indices,plot):
-    if plot:
-        c_range,rho_sets,idx,labels_ =  optimal_partition(phi2,inv_measure,P,return_rho=True)
-        kmeans_labels[indices] = labels_+np.max(kmeans_labels)+1
-        plt.figure(figsize=(5,5))
-        plt.scatter(c_range,rho_sets[:,0],s=10)
-        plt.scatter(c_range,rho_sets[:,1],s=10)
-        rho_c = np.min(rho_sets,axis=1)
-        plt.plot(c_range,rho_c,c='k',ls='--')
-        plt.scatter(c_range[idx],rho_c[idx],c='r',marker='x')
-        plt.ylim(.2,1)
-        plt.xlabel(r'$\phi_2$',fontsize=15)
-        plt.ylabel(r'$\rho$',fontsize=15)
-        plt.xticks(fontsize=12)
-        print(len(np.unique(kmeans_labels)))
-        plt.show()
-        
-    else:
-        kmeans_labels[indices] = optimal_partition(phi2,inv_measure,P,return_rho=False)+np.max(kmeans_labels)+1
-
-    final_kmeans_labels = np.zeros(kmeans_labels.shape,dtype=int)
-    for new_idx,label in enumerate(np.sort(np.unique(kmeans_labels))):
-        final_kmeans_labels[kmeans_labels==label]=new_idx
-
-    return final_kmeans_labels
-
-def recursive_partitioning_optimal(final_labels,delay,phi2,inv_measure,P,n_final_states,plot=False,save=False):
-    c_range,rho_sets,idx,kmeans_labels =  optimal_partition(phi2,inv_measure,P,return_rho=True)
-
-    if plot:
-        plt.figure(figsize=(5,5))
-        plt.scatter(c_range,rho_sets[:,0],s=10)
-        plt.scatter(c_range,rho_sets[:,1],s=10)
-
-        rho_c = np.min(rho_sets,axis=1)
-        plt.plot(c_range,rho_c,c='k',ls='--')
-        plt.scatter(c_range[idx],rho_c[idx],c='r',marker='x')
-        plt.ylim(.3,1)
-        # plt.xlim(-0.04,0.04)
-        plt.xlabel(r'$\phi_2$',fontsize=15)
-        plt.ylabel(r'$\rho$',fontsize=15)
-        plt.xticks(fontsize=12)
-        print(len(np.unique(kmeans_labels)))
-        if save:
-            plt.savefig('rho_{}states_Foraging.pdf'.format(len(np.unique(kmeans_labels))))
-        plt.show()
-    
-    labels_tree=np.zeros((n_final_states,len(kmeans_labels)),dtype=int)
-    labels_tree[0,:] = kmeans_labels
-    k=1
-    for k in range(1,n_final_states):
-        print(k)
-        lambda_2=[]
-        eigfunctions_states=[]
-        indices_states=[]
-        im_states=[]
-        P_states=[]
-        for state in np.unique(kmeans_labels):
-            cluster_traj = ma.zeros(final_labels.shape,dtype=int)
-            cluster_traj[~final_labels.mask] = np.array(kmeans_labels)[final_labels[~final_labels.mask]]
-            cluster_traj[final_labels.mask] = ma.masked
-            labels_here = ma.zeros(final_labels.shape,dtype=int)
-            sel = cluster_traj==state
-            labels_here[sel] = final_labels[sel]
-            labels_here[~sel] = ma.masked
-
-            lcs,P = transition_matrix(labels_here,delay,return_connected=True)
-            R = get_reversible_transition_matrix(P)
-            im = stationary_distribution(P)
-            eigvals,eigvecs = sorted_spectrum(R,k=2)
-            indices = np.zeros(len(np.unique(final_labels.compressed())),dtype=bool)
-            indices[lcs] = True
-
-            eigfunctions_states.append((eigvecs.real/np.linalg.norm(eigvecs.real,axis=0))[:,1])
-            indices_states.append(indices)
-            lambda_2.append(eigvals[1].real)
-            P_states.append(P)
-            im_states.append(im)
-
-
-        measures = [(inv_measure[kmeans_labels==state]).sum() for state in np.unique(kmeans_labels)]
-        state_to_split = np.argmax(measures)
-        print(state_to_split,lambda_2,measures)
-        kmeans_labels = subdivide_state_optimal(eigfunctions_states[state_to_split],
-                                               kmeans_labels,im_states[state_to_split],P_states[state_to_split],
-                                               indices_states[state_to_split],plot)
-        
-        labels_tree[k,:] = np.copy(kmeans_labels)
-        k+=1
-
-    return labels_tree    
-
-
