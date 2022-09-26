@@ -24,3 +24,4 @@ The code is fully written in python3, and we use of the following packages:
 - numpy '1.17.2'
 - joblib '0.13.2'
 - cython '0.29.23' 
+- findiff '0.9.2'
