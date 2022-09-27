@@ -1,4 +1,4 @@
-# predictive_ensemble_dynamics
+# maximally_predictive_states
 This repository contains the main scripts for the maximally predictive state space reconstruction and ensemble dynamics modelling presented in
 
 Costa AC, Ahamed T, Jordan D, Stephens GJ (2021) "Maximally predictive states: from partial observations to long timescales" ([arXiv link](https://arxiv.org/abs/2105.12811))
