@@ -7,6 +7,8 @@ def segment_maskedArray(tseries,min_size=50):
     '''
     Segments  time series in case it has missing data
     '''
+    if ~np.ma.isMaskedArray(tseries):
+        tseries = ma.masked_invalid(tseries)
     if len(tseries.shape)>1:
         mask = ~np.any(tseries.mask,axis=1)
     else:
@@ -37,7 +39,6 @@ def tm_seg(X,K):
 def trajectory_matrix(X,K):
     min_seg=K+1
     segments = segment_maskedArray(X,min_seg)
-    print(segments.shape)
     traj_matrix = ma.zeros((len(X),X.shape[1]*(K+1)))
     for t0,tf in segments:
         traj_matrix[t0+int(np.floor(K/2)):tf-int(np.ceil(K/2)+1)] = ma.masked_invalid(tm_seg(ma.filled(X[t0:tf],np.nan),K))
