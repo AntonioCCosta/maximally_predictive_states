@@ -256,7 +256,7 @@ def simulate(P,state0,iters):
 
 
 def optimal_partition(phi2,inv_measure,P,return_rho = True):
-
+    #make sure P is a sparse matrix!
     X = phi2
     c_range = np.sort(phi2)[1:-1]
     rho_c = np.zeros(len(c_range))
