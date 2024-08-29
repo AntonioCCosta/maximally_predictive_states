@@ -5,6 +5,8 @@ Costa AC, Ahamed T, Jordan D, Stephens GJ "Maximally predictive states: from par
 
 The data for reproducing the figures can be found in [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7130012.svg)](https://doi.org/10.5281/zenodo.7130012). We provide a run through all the steps on the analysis in two model systems in the folder ./ExamplePipeline
 
+For a follow-up application in $C. elegans$ postural time series, check this [repository](https://github.com/AntonioCCosta/markov_worm) and the corresponding [publication](https://www.pnas.org/doi/10.1073/pnas.2318805121).
+
 
 Any comments or questions, contact antonioccosta.phys(at)gmail(dot)com. Also, suggestions to speed up the code are more than welcome!
 
