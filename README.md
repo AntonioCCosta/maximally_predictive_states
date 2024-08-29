@@ -3,11 +3,10 @@ This repository contains the main scripts for the maximally predictive state spa
 
 Costa AC, Ahamed T, Jordan D, Stephens GJ "Maximally predictive states: from partial observations to long timescales" [*Chaos*](https://aip.scitation.org/doi/full/10.1063/5.0129398) 2023
 
-The data for reproducing the figures can be found in [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7130012.svg)](https://doi.org/10.5281/zenodo.7130012)
+The data for reproducing the figures can be found in [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7130012.svg)](https://doi.org/10.5281/zenodo.7130012). We provide a run through all the steps on the analysis in two model systems in the folder ./ExamplePipeline
 
 
-
-Any comments or questions, contact antoniocbscosta(at)gmail(dot)com. Also, suggestions to speed up the code are more than welcome!
+Any comments or questions, contact antonioccosta.phys(at)gmail(dot)com. Also, suggestions to speed up the code are more than welcome!
 
 
 -------------------------------------------------------------------------------------------
