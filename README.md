@@ -26,3 +26,5 @@ The code is fully written in python3, and we use of the following packages:
 - joblib '0.13.2'
 - cython '0.29.23' 
 - findiff '0.9.2'
+
+**Note**: msmtools has been deprecated. We recommend using the [deeptime package](https://deeptime-ml.github.io/latest/index.html) instead, where most functions we use will be in deeptime.markov.tools.estimation or deeptime.markov.tools.analysis
