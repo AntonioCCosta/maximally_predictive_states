@@ -5,7 +5,7 @@ Costa AC, Ahamed T, Jordan D, Stephens GJ "Maximally predictive states: from par
 
 The data for reproducing the figures can be found in [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7130012.svg)](https://doi.org/10.5281/zenodo.7130012). We provide a run through all the steps on the analysis in two model systems in the folder ./ExamplePipeline
 
-For a follow-up application in *C. elegans* postural time series, check this [repository](https://github.com/AntonioCCosta/markov_worm) and the corresponding [publication](https://www.pnas.org/doi/10.1073/pnas.2318805121).
+For a follow-up application in *C. elegans* postural time series, check this [repository](https://github.com/AntonioCCosta/markov_worm) and the corresponding [publication](https://www.pnas.org/doi/10.1073/pnas.2318805121). In addition, for an application in larval zebrafish behavior, check this [repository](https://github.com/AntonioCCosta/Markov_Fish_GS/tree/master) and the corresponding [publication](https://www.pnas.org/doi/10.1073/pnas.2410254121). Finally, a new tutorial on quantitative approaches to animal behavior that includes our modelling approach can be found [here](https://github.com/oist/Physics-of-Behavior-Tutorials).
 
 
 Any comments or questions, contact antonioccosta.phys(at)gmail(dot)com. Also, suggestions to speed up the code are more than welcome!
